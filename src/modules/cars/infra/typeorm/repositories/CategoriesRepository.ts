@@ -1,10 +1,10 @@
+import { Category } from "@modules/cars/infra/typeorm/entities/Category";
 import { getRepository, Repository } from "typeorm";
 
-import { Category } from "../../entities/Category";
 import {
   ICategoriesRepository,
   ICreateCategoryDTO,
-} from "../ICategoriesRepository";
+} from "../../../repositories/ICategoriesRepository";
 
 // DTO - Data transfer object
 // singleton - náo temos a precupacao de instaciar mais de uma vez

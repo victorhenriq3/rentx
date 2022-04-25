@@ -1,4 +1,4 @@
-import { Specification } from "../entities/Specification";
+import { Specification } from "@modules/cars/infra/typeorm/entities/Specification";
 
 /* eslint-disable prettier/prettier */
 interface ICreateSpecificationDTO {
