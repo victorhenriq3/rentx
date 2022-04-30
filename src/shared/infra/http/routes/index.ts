@@ -10,8 +10,8 @@ const router = Router();
 
 router.use("/categories", categoriesRoutes);
 router.use("/specifications", specificationRoutes);
-router.use("/users", usersRoutes);
 router.use("/cars", carsRoutes);
+router.use("/users", usersRoutes);
 router.use(authenticateRoutes);
 
 export { router };
