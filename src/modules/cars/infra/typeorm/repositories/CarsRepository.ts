@@ -10,6 +10,7 @@ class CarsRespository implements ICarsRepository {
   constructor() {
     this.repository = getRepository(Car);
   }
+
   async create({
     brand,
     category_id,
@@ -66,6 +67,12 @@ class CarsRespository implements ICarsRepository {
     const cars = await carsQuery.getMany();
 
     return cars;
+  }
+
+  async findById(id: string): Promise<Car> {
+    const car = await this.repository.findOne(id);
+
+    return car;
   }
 }
 
