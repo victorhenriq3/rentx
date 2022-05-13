@@ -21,7 +21,7 @@ class CreateRentalUseCase {
     expected_return_date,
   }: IRequest): Promise<Rental> {
     const minimumHour = 24;
-    // Nao deve ser possivel cadastrar um novo aluguel caso ja exista um aberto para o mesmo carro
+
     const carUnavailable = await this.rentalsRepository.findOpenRentalByCar(
       car_id
     );
@@ -30,7 +30,6 @@ class CreateRentalUseCase {
       throw new AppError("Car is unavailable");
     }
 
-    // nao deve ser possivel cadastrar um novo aluguel caso ja exista um aberto para o memso usuario
     const rentalOpenToUser = await this.rentalsRepository.findOpenRentalByUser(
       user_id
     );
@@ -38,8 +37,6 @@ class CreateRentalUseCase {
     if (rentalOpenToUser) {
       throw new AppError("There is a rental in progress for user");
     }
-
-    // o aluguel deve ter duracao minima de 24 horas
 
     const dateNow = this.dateProvider.dateNow();
 
