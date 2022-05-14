@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { ICarsImagesRepository } from "@modules/cars/repositories/IcarsImageRepository";
 import { inject, injectable } from "tsyringe";
 
