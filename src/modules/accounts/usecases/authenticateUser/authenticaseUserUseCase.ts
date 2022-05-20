@@ -5,6 +5,7 @@ import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { inject, injectable } from "tsyringe";
 
+import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
 import { AppError } from "@shared/errors/AppError";
 
 interface IRequest {
@@ -18,6 +19,7 @@ interface IResponse {
     email: string;
   };
   token: string;
+  refresh_token: string;
 }
 
 @injectable()
@@ -26,13 +28,21 @@ class AuthenticateUserUseCase {
     @inject("UsersRepository")
     private userRepository: IUsersRepository,
     @inject("UsersTokenRepository")
-    private usersTokenRepository: IUsersTokensRepository
+    private usersTokenRepository: IUsersTokensRepository,
+    @inject("DayjsDateProvider")
+    private dateProvider: IDateProvider
   ) {}
 
   async execute({ email, password }: IRequest): Promise<IResponse> {
     // Usuario existe
     const user = await this.userRepository.findByEmail(email);
-    const { expires_in_token, secret_refresh_token, secret_token, expires_in_refresh_token } = auth;
+    const {
+      expires_in_token,
+      secret_refresh_token,
+      secret_token,
+      expires_in_refresh_token,
+      expires_refresh_token_days,
+    } = auth;
 
     if (!user) {
       throw new AppError("Email or password incorrect");
@@ -53,13 +63,17 @@ class AuthenticateUserUseCase {
 
     const refresh_token = sign({ email }, secret_refresh_token, {
       subject: user.id,
-      expiresIn: expires_in_refresh_token
+      expiresIn: expires_in_refresh_token,
     });
+
+    const refresh_token_expires = this.dateProvider.addDays(
+      expires_refresh_token_days
+    );
 
     await this.usersTokenRepository.create({
       user_id: user.id,
-      expires_date:,
-      refresh_token:,
+      refresh_token,
+      expires_date: refresh_token_expires,
     });
 
     const tokenReturn: IResponse = {
@@ -68,6 +82,7 @@ class AuthenticateUserUseCase {
         name: user.name,
         email: user.email,
       },
+      refresh_token,
     };
 
     return tokenReturn;
