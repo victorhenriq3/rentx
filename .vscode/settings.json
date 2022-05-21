@@ -8,6 +8,8 @@
   ],
   "editor.formatOnSave": false,
   "cSpell.words": [
-    "Icars"
+    "dtos",
+    "Icars",
+    "typeorm"
   ]
 }
