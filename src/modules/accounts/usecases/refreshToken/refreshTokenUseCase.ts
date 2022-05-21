@@ -19,15 +19,17 @@ class RefreshTokenUseCase {
 
     const user_id = decode.sub;
 
-    const userTokens =
+    const userToken =
       await this.usersTokenRepository.findByUserIdAndRefreshToken(
         user_id,
         token
       );
 
-    if (!userTokens) {
+    if (!userToken) {
       throw new AppError("Refresh token does not exists!");
     }
+
+    await this.usersTokenRepository.deleteById(userToken.id);
   }
 }
 
