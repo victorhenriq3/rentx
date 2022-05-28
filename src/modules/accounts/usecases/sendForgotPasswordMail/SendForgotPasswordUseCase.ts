@@ -1,5 +1,6 @@
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { IUsersTokensRepository } from "@modules/accounts/repositories/IUsersTokensRepository";
+import { resolve } from "path";
 import { inject, injectable } from "tsyringe";
 import { v4 as uuidV4 } from "uuid";
 
@@ -22,6 +23,15 @@ class SendForgotPasswordUseCase {
   async execute(email: string) {
     const user = await this.usersRepository.findByEmail(email);
 
+    const templatePath = resolve(
+      __dirname,
+      "..",
+      "..",
+      "views",
+      "email",
+      "forgotpassword.hbs"
+    );
+
     if (!user) {
       throw new AppError("Users does not exist");
     }
@@ -36,10 +46,16 @@ class SendForgotPasswordUseCase {
       expires_date,
     });
 
+    const variables = {
+      name: user.name,
+      link: `http://localhost:3333/password/reset?token=${token}`,
+    };
+
     await this.mailProvider.sendMail(
       email,
       "Recuperaca de senha",
-      `O link para o reset é ${token}`
+      variables,
+      templatePath
     );
   }
 }
