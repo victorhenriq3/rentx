@@ -47,4 +47,22 @@ describe("Send Forgot Mail", () => {
       sendForgotPasswordMailUseCase.execute("123@123.com")
     ).rejects.toEqual(new AppError("Users does not exist"));
   });
+
+  it("should be able to create an users token", async () => {
+    const generateTokenEmail = jest.spyOn(
+      usersTokenRepositoryInMemory,
+      "create"
+    );
+
+    await usersRepositoryInMemory.create({
+      driver_license: "123123",
+      email: "1ki@lunsumuci.sz",
+      name: "In1a Lloyd",
+      password: "12345678",
+    });
+
+    await sendForgotPasswordMailUseCase.execute("1ki@lunsumuci.sz");
+
+    expect(generateTokenEmail).toHaveBeenCalled();
+  });
 });
