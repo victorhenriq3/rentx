@@ -1,6 +1,7 @@
 import upload from "@config/upload";
 import { S3 } from "aws-sdk";
 import fs from "fs";
+import mime from "mime";
 import { resolve } from "path";
 
 import { IStorageProvider } from "../IStorageProvider";
@@ -18,16 +19,29 @@ class S3StorageProvider implements IStorageProvider {
 
     const fileContent = await fs.promises.readFile(originalName);
 
-    await this.client.putObject({
-      Bucket: `${process.env.AWS_BUCKET}/${folder}`,
-      Key: file,
-      ACL: "public-read",
-      Body: fileContent,
-      ContentType: 
-    });
+    const contentType = mime.getType(originalName);
+
+    await this.client
+      .putObject({
+        Bucket: `${process.env.AWS_BUCKET}/${folder}`,
+        Key: file,
+        ACL: "public-read",
+        Body: fileContent,
+        ContentType: contentType,
+      })
+      .promise();
+
+    await fs.promises.unlink(originalName);
+
+    return file;
   }
   async delete(file: string, folder: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    await this.client
+      .deleteObject({
+        Bucket: `${process.env.AWS_BUCKET}/${folder}`,
+        Key: file,
+      })
+      .promise();
   }
 }
 
