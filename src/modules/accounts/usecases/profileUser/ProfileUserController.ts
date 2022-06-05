@@ -3,7 +3,7 @@ import { container } from "tsyringe";
 
 import { ProfileUserUseCase } from "./ProfileUserUseCase";
 
-class ProfileUserContrller {
+class ProfileUserController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { id } = request.user;
 
@@ -15,4 +15,4 @@ class ProfileUserContrller {
   }
 }
 
-export { ProfileUserContrller };
+export { ProfileUserController };
