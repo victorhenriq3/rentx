@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authenticateRoutes = void 0;
+var authenticateUserController_1 = require("@modules/accounts/usecases/authenticateUser/authenticateUserController");
+var refreshTokenController_1 = require("@modules/accounts/usecases/refreshToken/refreshTokenController");
+var express_1 = require("express");
+var authenticateRoutes = (0, express_1.Router)();
+exports.authenticateRoutes = authenticateRoutes;
+var authenticateUserController = new authenticateUserController_1.AuthenticateUserController();
+var refreshTokenController = new refreshTokenController_1.RefreshTokenController();
+authenticateRoutes.post("/sessions", authenticateUserController.handle);
+authenticateRoutes.post("/refresh-token", refreshTokenController.handle);
