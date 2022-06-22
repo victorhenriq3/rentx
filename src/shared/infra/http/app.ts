@@ -4,6 +4,8 @@ import "../../container";
 import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 import swaggerUi from "swagger-ui-express";
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
 
 import { AppError } from "@shared/errors/AppError";
 
@@ -22,12 +24,28 @@ app.use(express.json());
 
 app.use(rateLimiter);
 
+Sentry.init({
+  dsn: "https://e63570d8d80c40a3b2d44ceacf7dbc57@o1295592.ingest.sentry.io/6521395",
+  integrations: [
+    new Sentry.Integrations.Http({ tracing: true }),
+
+    new Tracing.Integrations.Express({ app }),
+  ],
+  tracesSampleRate: 1.0,
+});
+
+app.use(Sentry.Handlers.requestHandler());
+
+app.use(Sentry.Handlers.tracingHandler());
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use("/avatar", express.static(`${upload.tmpFolder}/avatar`));
 app.use("/cars", express.static(`${upload.tmpFolder}/cars`));
 
 app.use(router);
+
+app.use(Sentry.Handlers.errorHandler());
 
 app.use(
   (err: Error, request: Request, response: Response, next: NextFunction) => {
